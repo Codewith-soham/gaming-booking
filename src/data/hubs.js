@@ -1,0 +1,118 @@
+import { weeklyHours } from '../utils/hours'
+
+// All names, addresses and numbers below are fictional demo data.
+export const hubs = [
+  {
+    id: 'hub_pixel',
+    name: 'Pixel Arena',
+    slug: 'pixel-arena',
+    description:
+      'A two-branch gaming hub with high-refresh PCs, console corners and a calm lounge. Demo hub.',
+    address: '12 Demo Lane, Koregaon Park',
+    city: 'Pune',
+    latitude: 18.5362,
+    longitude: 73.8938,
+    phone: '+91 90000 11111',
+    imageUrls: ['https://picsum.photos/seed/pixel-arena/1200/700'],
+    amenities: ['Air conditioning', 'Snacks & drinks', 'Headsets provided', 'Parking'],
+    branchIds: ['br_kp', 'br_baner'],
+    openingHours: weeklyHours('10:00', '23:00'),
+    timezone: 'Asia/Kolkata',
+    isPublished: true,
+  },
+  {
+    id: 'hub_nova',
+    name: 'Nova Gaming Lounge',
+    slug: 'nova-gaming-lounge',
+    description: 'Premium PCs, PS5 bays and a VR room in the middle of the city. Demo hub.',
+    address: '48 Sample Street, Bandra West',
+    city: 'Mumbai',
+    latitude: 19.0596,
+    longitude: 72.8295,
+    phone: '+91 90000 22222',
+    imageUrls: ['https://picsum.photos/seed/nova-lounge/1200/700'],
+    amenities: ['Air conditioning', 'VR room', 'Streaming setup', 'Cafe'],
+    branchIds: ['br_nova'],
+    openingHours: weeklyHours('11:00', '23:30'),
+    timezone: 'Asia/Kolkata',
+    isPublished: true,
+  },
+  {
+    id: 'hub_rift',
+    name: 'Rift Racing & VR',
+    slug: 'rift-racing-vr',
+    description: 'Racing simulators, VR rigs and a PS5 corner for groups. Demo hub.',
+    address: '7 Placeholder Road, Indiranagar',
+    city: 'Bengaluru',
+    latitude: 12.9784,
+    longitude: 77.6408,
+    phone: '+91 90000 33333',
+    imageUrls: ['https://picsum.photos/seed/rift-racing/1200/700'],
+    amenities: ['Racing simulators', 'VR rigs', 'Group booking', 'Parking'],
+    branchIds: ['br_rift'],
+    openingHours: weeklyHours('10:00', '22:00'),
+    timezone: 'Asia/Kolkata',
+    isPublished: true,
+  },
+]
+
+export const branches = [
+  {
+    id: 'br_kp',
+    hubId: 'hub_pixel',
+    name: 'Koregaon Park',
+    address: '12 Demo Lane, Koregaon Park',
+    timezone: 'Asia/Kolkata',
+    openingHours: weeklyHours('10:00', '23:00'),
+    isActive: true,
+  },
+  {
+    id: 'br_baner',
+    hubId: 'hub_pixel',
+    name: 'Baner',
+    address: '5 Example Chowk, Baner',
+    timezone: 'Asia/Kolkata',
+    openingHours: weeklyHours('11:00', '23:00'),
+    isActive: true,
+  },
+  {
+    id: 'br_nova',
+    hubId: 'hub_nova',
+    name: 'Bandra West',
+    address: '48 Sample Street, Bandra West',
+    timezone: 'Asia/Kolkata',
+    openingHours: weeklyHours('11:00', '23:30'),
+    isActive: true,
+  },
+  {
+    id: 'br_rift',
+    hubId: 'hub_rift',
+    name: 'Indiranagar',
+    address: '7 Placeholder Road, Indiranagar',
+    timezone: 'Asia/Kolkata',
+    openingHours: weeklyHours('10:00', '22:00'),
+    isActive: true,
+  },
+]
+
+// Percentage discounts; the best applicable one is used by pricing.
+export const pricingRules = [
+  {
+    id: 'rule_pixel_long',
+    hubId: 'hub_pixel',
+    label: 'Long session: 10% off 3h+',
+    type: 'PERCENT',
+    percent: 10,
+    minDurationMinutes: 180,
+    isActive: true,
+  },
+  {
+    id: 'rule_nova_long',
+    hubId: 'hub_nova',
+    label: 'Marathon: 15% off 4h',
+    type: 'PERCENT',
+    percent: 15,
+    minDurationMinutes: 240,
+    isActive: true,
+  },
+]
