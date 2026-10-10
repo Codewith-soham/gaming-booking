@@ -4,6 +4,7 @@ import {
   Cpu,
   DollarSign,
   LayoutDashboard,
+  LogOut,
   Menu,
   Monitor,
   Settings,
@@ -13,8 +14,11 @@ import {
   X,
 } from 'lucide-react'
 import { useState } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { cn, DemoTag } from '../components/ui'
+import AdminProvider from '../features/admin/AdminProvider'
+import { useAdmin } from '../features/admin/adminContext'
+import { logoutAdmin } from '../features/admin/adminSession'
 
 const nav = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -52,8 +56,10 @@ function SidebarNav({ onNavigate }) {
   )
 }
 
-export default function AdminLayout() {
+function AdminShell() {
   const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
+  const { hubs, hub, branches, branchId, setHubId, setBranchId } = useAdmin()
 
   return (
     <div className="flex min-h-screen">
@@ -95,9 +101,32 @@ export default function AdminLayout() {
             <Menu aria-hidden="true" className="size-5" />
           </button>
           <label className="flex items-center gap-2 text-sm">
+            <span className="text-muted">Hub</span>
+            <select
+              value={hub?.id ?? ''}
+              onChange={(e) => setHubId(e.target.value)}
+              className="rounded-lg border border-line bg-elevated px-2 py-1 text-sm"
+            >
+              {hubs.map((h) => (
+                <option key={h.id} value={h.id}>
+                  {h.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex items-center gap-2 text-sm">
             <span className="text-muted">Branch</span>
-            <select className="rounded-lg border border-line bg-elevated px-2 py-1 text-sm">
-              <option>Main branch (demo)</option>
+            <select
+              value={branchId}
+              onChange={(e) => setBranchId(e.target.value)}
+              className="rounded-lg border border-line bg-elevated px-2 py-1 text-sm"
+            >
+              <option value="">All branches</option>
+              {branches.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
             </select>
           </label>
           <div className="ml-auto flex items-center gap-3">
@@ -108,13 +137,30 @@ export default function AdminLayout() {
             <Link to="/" className="text-sm text-muted hover:text-ink">
               Customer site
             </Link>
+            <button
+              type="button"
+              className="flex items-center gap-1 text-sm text-muted hover:text-ink"
+              onClick={() => {
+                logoutAdmin()
+                navigate('/admin/login')
+              }}
+            >
+              <LogOut aria-hidden="true" className="size-4" />
+              Sign out
+            </button>
           </div>
         </header>
 
-        <main className="flex-1 p-6">
-          <Outlet />
-        </main>
+        <main className="flex-1 p-6">{hub ? <Outlet /> : null}</main>
       </div>
     </div>
+  )
+}
+
+export default function AdminLayout() {
+  return (
+    <AdminProvider>
+      <AdminShell />
+    </AdminProvider>
   )
 }

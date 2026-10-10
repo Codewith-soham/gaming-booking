@@ -2,7 +2,9 @@ import { now } from '../utils/clock'
 import { BookingStatus, ErrorCode, OperationalStatus, ResourceType } from '../utils/constants'
 import { ServiceError } from '../utils/errors'
 import { blockingIntervals } from '../utils/occupancy'
+import { deriveStationStatus } from '../utils/stationStatus'
 import { toMs } from '../utils/time'
+import { enrichBooking } from './bookingService'
 import { clone, invalid, requireEntity, requireOneOf, requireText } from './helpers'
 import { store } from './store'
 
@@ -151,4 +153,53 @@ export async function setOperationalStatus(resourceId, status) {
     ),
   }))
   return getResourceById(resourceId)
+}
+
+// Resources joined with their derived live state (AVAILABLE / RESERVED / OCCUPIED / MAINTENANCE /
+// OFFLINE) plus the booking in use right now and the next booking after it. The state is computed
+// from bookings and sessions, never stored.
+// filters: { hubId, branchId, type, includeInactive }
+export async function listStationStates(filters = {}) {
+  const state = store.getState()
+  const at = now()
+  const t = toMs(at)
+  const sessionByBooking = new Map(state.sessions.map((x) => [x.bookingId, x]))
+
+  return state.resources
+    .filter(
+      (r) =>
+        (!filters.hubId || r.hubId === filters.hubId) &&
+        (!filters.branchId || r.branchId === filters.branchId) &&
+        (!filters.type || r.type === filters.type) &&
+        (filters.includeInactive || r.isActive),
+    )
+    .map((resource) => {
+      const stationState = deriveStationStatus(resource, state.bookings, state.sessions, at)
+      const mine = blockingIntervals(state, resource.id)
+        .filter(
+          (i) =>
+            state.bookings.find((b) => b.id === i.bookingId).status !== BookingStatus.COMPLETED,
+        )
+        .sort((a, b) => a.start - b.start)
+      const current = mine.find((i) => i.start <= t && t < i.end)
+      const next = mine.find((i) => i.start > t && i.bookingId !== current?.bookingId)
+      const pick = (i) =>
+        i
+          ? enrichBooking(
+              state,
+              state.bookings.find((b) => b.id === i.bookingId),
+            )
+          : null
+      return {
+        ...clone(resource),
+        state: stationState,
+        currentBooking: pick(current),
+        nextBooking: pick(next),
+        hasActiveSession: [...sessionByBooking.values()].some(
+          (x) =>
+            x.status === 'ACTIVE' &&
+            state.bookings.find((b) => b.id === x.bookingId)?.resourceId === resource.id,
+        ),
+      }
+    })
 }

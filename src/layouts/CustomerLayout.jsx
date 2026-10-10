@@ -1,6 +1,7 @@
 import { Gamepad2 } from 'lucide-react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { cn, DemoTag } from '../components/ui'
+import CustomerMenu from '../components/booking/CustomerMenu'
+import { cn } from '../components/ui'
 
 const links = [
   { to: '/', label: 'Discover', end: true },
@@ -32,7 +33,7 @@ export default function CustomerLayout() {
                 {l.label}
               </NavLink>
             ))}
-            <DemoTag>Demo customer</DemoTag>
+            <CustomerMenu />
           </nav>
         </div>
       </header>

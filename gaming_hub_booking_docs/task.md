@@ -85,13 +85,13 @@ Source: documentation pack in this folder (PRD, UX-FLOWS, FRONTEND-ARCHITECTURE,
 
 ## M4 — Admin operations (FR-07 – FR-11)
 
-- [ ] **T4.1 Demo login `/admin/login`** — demo-only flag, clearly labeled; route guard for `/admin/*` noted as non-security.
-- [ ] **T4.2 Dashboard `/admin`** — KPI cards derived from data, booking activity, upcoming bookings, station availability summary, quick actions.
-- [ ] **T4.3 Bookings `/admin/bookings`** — search (reference/customer), filters: date, source, booking status, payment status; table; details drawer/page; payment-status control (mock; separate from booking status); cancel with confirm.
-- [ ] **T4.4 Walk-in booking** — choose/quick-create customer, resource, start/duration, price calc, availability check, record payment status (mock), confirm; source = `ADMIN`; appears in customer availability.
-- [ ] **T4.5 Stations `/admin/stations`** — grid with derived status + legend; filters by type/status; detail panel; Mark maintenance / offline / restore with confirmation; warn about (or block per documented rule) overlapping future confirmed bookings; maintenance removes station from availability.
-- [ ] **T4.6 Sessions `/admin/sessions`** — tabs Active / Upcoming / Completed; elapsed/remaining timer; Start (from confirmed booking), Extend (with conflict validation result shown), Complete (confirm); near-end reminder state.
-- [ ] **T4.7 Customers `/admin/customers`** — searchable fictional list; booking history summary.
+- [x] **T4.1 Demo login `/admin/login`** — demo-only flag, clearly labeled; route guard for `/admin/*` noted as non-security.
+- [x] **T4.2 Dashboard `/admin`** — KPI cards derived from data, booking activity, upcoming bookings, station availability summary, quick actions.
+- [x] **T4.3 Bookings `/admin/bookings`** — search (reference/customer), filters: date, source, booking status, payment status; table; details drawer/page; payment-status control (mock; separate from booking status); cancel with confirm.
+- [x] **T4.4 Walk-in booking** — choose/quick-create customer, resource, start/duration, price calc, availability check, record payment status (mock), confirm; source = `ADMIN`; appears in customer availability.
+- [x] **T4.5 Stations `/admin/stations`** — grid with derived status + legend; filters by type/status; detail panel; Mark maintenance / offline / restore with confirmation; warn about (or block per documented rule) overlapping future confirmed bookings; maintenance removes station from availability.
+- [x] **T4.6 Sessions `/admin/sessions`** — tabs Active / Upcoming / Completed; elapsed/remaining timer; Start (from confirmed booking), Extend (with conflict validation result shown), Complete (confirm); near-end reminder state.
+- [x] **T4.7 Customers `/admin/customers`** — searchable fictional list; booking history summary.
   *Accept (M4):* admin booking shares state with customer bookings; maintenance blocks availability; extension checks conflicts; payment/booking status distinct.
 
 ---

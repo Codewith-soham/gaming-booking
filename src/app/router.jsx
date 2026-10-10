@@ -1,4 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom'
+import AdminGuard from '../features/admin/AdminGuard'
+import AdminLoginPage from '../features/admin/AdminLoginPage'
+import DashboardPage from '../features/admin-dashboard/pages/DashboardPage'
+import AdminBookingDetailsPage from '../features/admin-bookings/pages/AdminBookingDetailsPage'
+import AdminBookingsPage from '../features/admin-bookings/pages/AdminBookingsPage'
+import WalkInPage from '../features/admin-bookings/pages/WalkInPage'
+import CustomersPage from '../features/customers/pages/CustomersPage'
+import SessionsPage from '../features/sessions/pages/SessionsPage'
+import StationsPage from '../features/stations/pages/StationsPage'
 import BookingPage from '../features/booking/pages/BookingPage'
 import DiscoverPage from '../features/discovery/pages/DiscoverPage'
 import HubDetailsPage from '../features/hub-details/pages/HubDetailsPage'
@@ -29,37 +38,22 @@ export const routes = [
       { path: '/my-bookings', element: <MyBookingsPage /> },
     ],
   },
-  {
-    path: '/admin/login',
-    element: page('Admin login', 'Demo-only login arrives in M4.', 'M4', {
-      backTo: '/',
-      backLabel: 'Back to customer site',
-    }),
-  },
+  { path: '/admin/login', element: <AdminLoginPage /> },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <AdminGuard>
+        <AdminLayout />
+      </AdminGuard>
+    ),
     children: [
-      {
-        index: true,
-        element: page('Dashboard', 'KPIs and activity arrive in M4.', 'M4', adminBack),
-      },
-      {
-        path: 'bookings',
-        element: page('Bookings', 'Booking management arrives in M4.', 'M4', adminBack),
-      },
-      {
-        path: 'stations',
-        element: page('Live stations', 'Station grid arrives in M4.', 'M4', adminBack),
-      },
-      {
-        path: 'sessions',
-        element: page('Sessions', 'Session management arrives in M4.', 'M4', adminBack),
-      },
-      {
-        path: 'customers',
-        element: page('Customers', 'Customer list arrives in M4.', 'M4', adminBack),
-      },
+      { index: true, element: <DashboardPage /> },
+      { path: 'bookings', element: <AdminBookingsPage /> },
+      { path: 'bookings/new', element: <WalkInPage /> },
+      { path: 'bookings/:bookingId', element: <AdminBookingDetailsPage /> },
+      { path: 'stations', element: <StationsPage /> },
+      { path: 'sessions', element: <SessionsPage /> },
+      { path: 'customers', element: <CustomersPage /> },
       {
         path: 'revenue',
         element: page('Revenue', 'Demo revenue summary arrives in M5.', 'M5', adminBack),

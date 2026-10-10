@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { isAdminLoggedIn, loginAdmin, logoutAdmin } from '../features/admin/adminSession'
 import { setupDomain, teardownDomain } from '../test/helpers'
 import { routes } from './router'
 import Providers from './providers'
@@ -25,10 +27,19 @@ describe('routing', () => {
     expect(await screen.findByRole('heading', { name: 'Pixel Arena' })).toBeInTheDocument()
   })
 
-  it('renders the admin layout on /admin/bookings', () => {
+  it('sends signed-out visitors from admin pages to the demo login', async () => {
+    logoutAdmin()
     renderAt('/admin/bookings')
-    expect(screen.getByRole('navigation', { name: 'Admin' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Bookings' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'GameHub Admin' })).toBeInTheDocument()
+    expect(screen.getByText('Prototype only')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Continue as demo staff' })).toBeInTheDocument()
+  })
+
+  it('renders the admin layout on /admin/bookings once signed in', async () => {
+    loginAdmin()
+    renderAt('/admin/bookings')
+    expect(await screen.findByRole('navigation', { name: 'Admin' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Bookings' })).toBeInTheDocument()
   })
 
   it('shows not-found for unknown routes', () => {
@@ -36,9 +47,37 @@ describe('routing', () => {
     expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument()
   })
 
-  it('shows not-found inside the admin layout for unknown admin routes', () => {
+  it('shows not-found inside the admin layout for unknown admin routes', async () => {
+    loginAdmin()
     renderAt('/admin/nope')
-    expect(screen.getByRole('navigation', { name: 'Admin' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument()
+    expect(await screen.findByRole('navigation', { name: 'Admin' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Page not found' })).toBeInTheDocument()
+  })
+})
+
+describe('customer menu', () => {
+  it('opens the admin panel or logs out to the login page', async () => {
+    const user = userEvent.setup()
+    loginAdmin()
+    renderAt('/')
+    await user.click(await screen.findByRole('button', { name: /Demo customer/ }))
+    expect(screen.getByRole('menuitem', { name: 'Open admin panel' })).toHaveAttribute(
+      'href',
+      '/admin',
+    )
+
+    await user.click(screen.getByRole('menuitem', { name: 'Log out' }))
+    expect(await screen.findByText('Prototype only')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Continue as demo staff' })).toBeInTheDocument()
+    expect(isAdminLoggedIn()).toBe(false)
+  })
+
+  it('closes the menu with Escape', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    await user.click(await screen.findByRole('button', { name: /Demo customer/ }))
+    expect(screen.getByRole('menu')).toBeInTheDocument()
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 })
